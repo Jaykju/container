@@ -28,6 +28,9 @@ class Registry implements SingletonInterface
      */
     public function configureContainer(ContainerConfiguration $containerConfiguration): void
     {
+        if (isset($GLOBALS['TCA']['tt_content']['containerConfiguration'][$containerConfiguration->getCType()])) {
+            throw new \InvalidArgumentException('CType ' . $containerConfiguration->getCType() . ' already in use', 1674747486);
+        }
         ExtensionManagementUtility::addTcaSelectItem(
             'tt_content',
             'CType',
@@ -45,8 +48,13 @@ class Registry implements SingletonInterface
             $GLOBALS['TCA']['tt_content']['types'][$containerConfiguration->getCType()]['previewRenderer'] = \B13\Container\Backend\Preview\ContainerPreviewRenderer::class;
         }
 
+        $inUse = [];
         foreach ($containerConfiguration->getGrid() as $row) {
             foreach ($row as $column) {
+                if (in_array($column['colPos'], $inUse, true)) {
+                    throw new \InvalidArgumentException('colPos ' . $column['colPos'] . ' already in use', 1674747485);
+                }
+                $inUse[] = $column['colPos'];
                 $GLOBALS['TCA']['tt_content']['columns']['colPos']['config']['items'][] = [
                     $column['name'],
                     $column['colPos'],

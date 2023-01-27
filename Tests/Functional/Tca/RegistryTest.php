@@ -93,4 +93,55 @@ b13-container = EXT:container/Resources/Private/Templates/Container.html
         $expected = 'LLL:EXT:backend/Resources/Private/Language/locallang_db_new_content_el.xlf:special';
         self::assertSame($expected, $specialHeader);
     }
+
+    /**
+     * @test
+     */
+    public function registryThrowsExceptionForInvalideColPosConfiguration(): void
+    {
+        $this->expectException(\InvalidArgumentException::class);
+        \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance(Registry::class)->configureContainer(
+            (
+            new ContainerConfiguration(
+                'b13-container',
+                'foo',
+                'bar',
+                [
+                    [
+                        [['name' => 'col 1', 'colPos' => 1]],
+                        [['name' => 'col 2', 'colPos' => 2]],
+                    ],
+                ]
+            )
+            )
+        );
+    }
+
+    /**
+     * @test
+     */
+    public function registryThrowsExceptionForInvalideCTypeConfiguration(): void
+    {
+        $this->expectException(\InvalidArgumentException::class);
+        \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance(Registry::class)->configureContainer(
+            (
+            new ContainerConfiguration(
+                'b13-container',
+                'foo',
+                'bar',
+                []
+            )
+            )
+        );
+        \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance(Registry::class)->configureContainer(
+            (
+            new ContainerConfiguration(
+                'b13-container',
+                'foo',
+                'bar',
+                []
+            )
+            )
+        );
+    }
 }
